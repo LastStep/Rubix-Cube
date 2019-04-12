@@ -1,12 +1,12 @@
+from pynput.keyboard import Key, KeyCode, Listener
 from pyqtgraph.Qt import QtCore, QtGui
 import pyqtgraph.opengl as gl
 import pyqtgraph as pg
-import numpy as np
-import CubieClass as Rubix
-import sys
-from pynput.keyboard import Key, KeyCode, Listener
-from time import sleep
 from collections import deque
+from time import sleep
+import CubieClass as Rubix
+import numpy as np
+import sys
 pg.mkQApp()
 
 class Visualizer():
