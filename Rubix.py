@@ -6,6 +6,7 @@ import CubieClass as Rubix
 import sys
 from pynput.keyboard import Key, KeyCode, Listener
 from time import sleep
+from collections import deque
 pg.mkQApp()
 
 class Visualizer():
@@ -105,7 +106,6 @@ def on_press(key):
 
     # Start Qt event loop unless running in interactive mode.
 if __name__ == '__main__':
-  from collections import deque
   keys = deque([''])
   Cubies = np.empty(shape = (3, 3, 3), dtype = object)
   Rubix.make_cube(Cubies)
