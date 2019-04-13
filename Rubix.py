@@ -21,10 +21,9 @@ class Visualizer():
 
         # gx = gl.GLGridItem()
         # gy = gl.GLGridItem()
-        # gy.rotate(90, 0, 1, 0)
         # gz = gl.GLGridItem()
+        # gy.rotate(90, 0, 1, 0)
         # gz.rotate(90, 1, 0, 0)
-        # gl.GLSurfacePlotItem(drawEdges = True)
         # self.w.addItem(gx)
         # self.w.addItem(gy)
         # self.w.addItem(gz)
@@ -55,7 +54,7 @@ class Visualizer():
         for cubie in Cubes.flatten():
           for face in cubie.faces.values():
             face.rotate((-1 + check), *direction)
-        sleep(0.003)
+        sleep(1/animation_speed)
         self.phi += 1
       self.phi = 0
 
@@ -101,11 +100,30 @@ def on_press(key):
   elif key == KeyCode(char = '9'):
     v.rotateU(check, [False, False, True]) #Bottom Face
   keys.append(key)
+  if key == Key.space:
+    randomize(30)
+  if key == Key.enter:
+    v.w.opts['fov'] = 60
+    v.w.opts['elevation'] = 30
+    v.w.opts['azimuth'] = 45
   if key == Key.esc:
     pg.exit()
 
+def randomize(n = 20):
+  from random import randrange
+  random_moves = deque([])
+  for _ in range(n):
+    key = randrange(1,19)
+    if key//9 == 1:
+      key %= 9
+      random_moves.append(Key.shift)
+    random_moves.append(KeyCode(char = key))
+  for n,move in enumerate(random_moves):
+    on_press(move)
+
     # Start Qt event loop unless running in interactive mode.
 if __name__ == '__main__':
+  animation_speed = 200
   keys = deque([''])
   Cubies = np.empty(shape = (3, 3, 3), dtype = object)
   Rubix.make_cube(Cubies)

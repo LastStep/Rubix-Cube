@@ -1,6 +1,7 @@
 import numpy as np
 from itertools import product
 import pyqtgraph.opengl as gl
+import OpenGL.GL.shaders as shaders
 
 class Cubie:
 
@@ -9,21 +10,30 @@ class Cubie:
     self.data = data
     self.faces = {}
     self.face_show = {
-                      'B':True,
-                      'F':True,
-                      'U':True,
-                      'D':True,
-                      'R':True,
-                      'L':True
-                     }
+      'B':True,
+      'F':True,
+      'U':True,
+      'D':True,
+      'R':True,
+      'L':True
+    }
     self.colors = {
-                    'B':(0, 0, 1, 0),
-                    'F':(1, 1, 1, 0),
-                    'U':(1, 1, 0, 0),
-                    'D':(0, 1, 0, 0),
-                    'R':(1, 0.5, 1, 0),
-                    'L':(1, 0, 0, 0)
-                  }
+      'B':(0.45, 0, 0, 0),
+      'F':(0.15, 0, 0, 0),
+      'U':(0.85, 0, 0, 0),
+      'D':(1, 0, 0, 0),
+      'R':(0.60, 0, 0, 0),
+      'L':(0.30, 0, 0, 0)
+    }
+
+    self.colors = {
+      'B':(0, 0.3, 0.7, 0),
+      'F':(0.9, 0.9, 0.9, 0),
+      'U':(1, 1, 0.3, 0),
+      'D':(0, 0.7, 0.3, 0),
+      'R':(1, 0.6, 0.4, 0),
+      'L':(0.7, 0, 0.3, 0)
+    }
 
 def check_faces(cube, Cubies):
   x, y, z = cube.index
@@ -89,17 +99,17 @@ def make_cube(Cubies):
         Cubies[i][j][k].colors[face] = (0, 0, 0, 0)
 
     cube.faces['B'] = gl.GLSurfacePlotItem(
-        x = xx, y = yx, z = zx, color = cube.colors['B'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = None)
+        x = xx, y = yx, z = zx, color = cube.colors['B'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = 'balloon')
     cube.faces['F'] = gl.GLSurfacePlotItem(
-        x = xx + 1, y = yx, z = zx, color = cube.colors['F'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = None)
+        x = xx + 1, y = yx, z = zx, color = cube.colors['F'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = 'balloon')
 
     cube.faces['L'] = gl.GLSurfacePlotItem(
-        x = xy, y = yy, z = zy, color = cube.colors['L'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = None)
+        x = xy, y = yy, z = zy, color = cube.colors['L'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = 'balloon')
     cube.faces['R'] = gl.GLSurfacePlotItem(
-        x = xy, y = yy + 1, z = zy, color = cube.colors['R'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = None)
+        x = xy, y = yy + 1, z = zy, color = cube.colors['R'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = 'balloon')
 
     cube.faces['U'] = gl.GLSurfacePlotItem(
-        x = xz, y = yz, z = zz1, color = cube.colors['U'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = None)
+        x = xz, y = yz, z = zz1, color = cube.colors['U'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = 'balloon')
     cube.faces['D'] = gl.GLSurfacePlotItem(
-        x = xz, y = yz, z = zz2, color =cube.colors['D'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = None)
+        x = xz, y = yz, z = zz2, color =cube.colors['D'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = 'balloon')
 
