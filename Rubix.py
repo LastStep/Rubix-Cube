@@ -52,24 +52,15 @@ class Visualizer():
       for cubie in Cubies.flatten():
         self.set_plotdata(cubie, *cubie.data)
 
-    def rotate(self, Cubes, check, direction):
+    def rotate(self, Face, check, direction):
       for _ in range(90):
-        for cubie in Cubes.flatten():
+        for cubie in Face.flatten():
           for face in cubie.faces.values():
             face.rotate((-1 + check), *direction)
         sleep(1/animation_speed)
-
-    def rotateU(self, check, layer):
-      self.rotate(Cubies[:, :, layer], check, (0, 0, 1))
-      Cubies[:, :, layer] = np.rot90(Cubies[:, :, layer], 3 - check)
-
-    def rotateR(self, check, layer):
-      self.rotate(Cubies[:, layer, :], check, (0, 1, 0))
-      Cubies[:, layer, :] = np.rot90(Cubies[:, layer, :], 1 + check)
-
-    def rotateF(self, check, layer):
-      self.rotate(Cubies[layer, :, :], check, (1, 0, 0))
-      Cubies[layer, :, :] = np.rot90(Cubies[layer, :, :], 3 - check)
+      if direction[1] == 1:
+        return np.rot90(Face, 1 + check)
+      return np.rot90(Face, 3 - check)
 
     def animation(self):
       self.update()
@@ -78,17 +69,17 @@ class Visualizer():
 def on_press(key):
   check = 0 if keys.pop() != Key.shift else 2
   if key == KeyCode(char = 'b'):
-    v.rotateF(check, 0) #Back Face
+    Cubies[0, :, :] = v.rotate(Cubies[0, :, :], check, (1, 0, 0)) #Back Face
   elif key == KeyCode(char = 'f'):
-    v.rotateF(check, 2) #Front Face
+    Cubies[2, :, :] = v.rotate(Cubies[2, :, :], check, (1, 0, 0))  #Front Face
   elif key == KeyCode(char = 'l'):
-    v.rotateR(check, 0) #Left Face
+    Cubies[:, 0, :] = v.rotate(Cubies[:, 0, :], check, (0, 1, 0))  #Left Face
   elif key == KeyCode(char = 'r'):
-    v.rotateR(check, 2) #Right Face
+    Cubies[:, 2, :] = v.rotate(Cubies[:, 2, :], check, (0, 1, 0))  #Right Face
   elif key == KeyCode(char = 'd'):
-    v.rotateU(check, 0) #Down Face
+    Cubies[:, :, 0] = v.rotate(Cubies[:, :, 0], check, (0, 0, 1))  #Down Face
   elif key == KeyCode(char = 'u'):
-    v.rotateU(check, 2) #Up Face
+    Cubies[:, :, 2] = v.rotate(Cubies[:, :, 2], check, (0, 0, 1))  #Up Face
   keys.append(key)
   if key == Key.space:
     # randomize(30)
