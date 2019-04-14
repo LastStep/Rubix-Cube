@@ -59,20 +59,17 @@ class Visualizer():
         self.phi += 1
       self.phi = 0
 
-    def rotateU(self, check, layers):
-      layer = [k for k,v in enumerate(layers) if v]
-      self.rotate(Cubies[:, :, layer[0]], check, (0, 0, 1))
-      Cubies[:, :, layer[0]] = np.rot90(Cubies[:, :, layer[0]], 3 - check)
+    def rotateU(self, check, layer):
+      self.rotate(Cubies[:, :, layer], check, (0, 0, 1))
+      Cubies[:, :, layer] = np.rot90(Cubies[:, :, layer], 3 - check)
 
-    def rotateR(self, check, layers):
-      layer = [k for k,v in enumerate(layers) if v]
-      self.rotate(Cubies[:, layer[0], :], check, (0, 1, 0))
-      Cubies[:, layer[0], :] = np.rot90(Cubies[:, layer[0], :], 1 + check)
+    def rotateR(self, check, layer):
+      self.rotate(Cubies[:, layer, :], check, (0, 1, 0))
+      Cubies[:, layer, :] = np.rot90(Cubies[:, layer, :], 1 + check)
 
-    def rotateF(self, check, layers):
-      layer = [k for k,v in enumerate(layers) if v]
-      self.rotate(Cubies[layer[0], :, :], check, (1, 0, 0))
-      Cubies[layer[0], :, :] = np.rot90(Cubies[layer[0], :, :], 3 - check)
+    def rotateF(self, check, layer):
+      self.rotate(Cubies[layer, :, :], check, (1, 0, 0))
+      Cubies[layer, :, :] = np.rot90(Cubies[layer, :, :], 3 - check)
 
     def animation(self):
       timer = QtCore.QTimer()
@@ -83,17 +80,17 @@ class Visualizer():
 def on_press(key):
   check = 0 if keys.pop() != Key.shift else 2
   if key == KeyCode(char = 'b'):
-    v.rotateF(check, [True, False, False]) #Back Face
+    v.rotateF(check, 0) #Back Face
   elif key == KeyCode(char = 'f'):
-    v.rotateF(check, [False, False, True]) #Front Face
-  elif key == KeyCode(char = 'r'):
-    v.rotateR(check, [True, False, False]) #Right Face
+    v.rotateF(check, 2) #Front Face
   elif key == KeyCode(char = 'l'):
-    v.rotateR(check, [False, False, True]) #Left Face
+    v.rotateR(check, 0) #Left Face
+  elif key == KeyCode(char = 'r'):
+    v.rotateR(check, 2) #Right Face
   elif key == KeyCode(char = 'd'):
-    v.rotateU(check, [True, False, False]) #Down Face
+    v.rotateU(check, 0) #Down Face
   elif key == KeyCode(char = 'u'):
-    v.rotateU(check, [False, False, True]) #Up Face
+    v.rotateU(check, 2) #Up Face
   keys.append(key)
   if key == Key.space:
     randomize(30)
@@ -105,14 +102,11 @@ def on_press(key):
     pg.exit()
 
 def randomize(n = 20):
-  from random import randrange
+  from random import choice
   random_moves = deque([])
   for _ in range(n):
-    key = randrange(1,19)
-    if key//9 == 1:
-      key %= 9
-      random_moves.append(Key.shift)
-    random_moves.append(KeyCode(char = key))
+    key = choice(['u','d','r','l','f','b','shift'])
+    random_moves.append(KeyCode(char = key)) if key != 'shift' else random_moves.append(Key.shift)
   for n,move in enumerate(random_moves):
     on_press(move)
 
