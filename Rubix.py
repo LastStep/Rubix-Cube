@@ -15,12 +15,11 @@ class Visualizer():
       self.w.opts['distance'] = 15
       self.w.opts['fov'] = 70
       self.w.opts['elevation'] = 25
-      self.w.opts['azimuth'] = 210
+      self.w.opts['azimuth'] = 30
       self.w.setGeometry(30, 30, 1080, 720)
       self.w.showFullScreen()
       self.w.setBackgroundColor('w')
       self.w.show()
-      self.phi = 0
 
       # gx = gl.GLGridItem()
       # gy = gl.GLGridItem()
@@ -54,13 +53,11 @@ class Visualizer():
         self.set_plotdata(cubie, *cubie.data)
 
     def rotate(self, Cubes, check, direction):
-      while abs(self.phi) < 90:
+      for _ in range(90):
         for cubie in Cubes.flatten():
           for face in cubie.faces.values():
             face.rotate((-1 + check), *direction)
         sleep(1/animation_speed)
-        self.phi += 1
-      self.phi = 0
 
     def rotateU(self, check, layer):
       self.rotate(Cubies[:, :, layer], check, (0, 0, 1))
@@ -99,7 +96,7 @@ def on_press(key):
   if key == Key.enter:
     v.w.opts['fov'] = 70
     v.w.opts['elevation'] = 25
-    v.w.opts['azimuth'] = 210
+    v.w.opts['azimuth'] = 30
     v.update()
   if key == Key.esc:
     pg.exit()
