@@ -17,7 +17,7 @@ class Visualizer():
       self.w.opts['elevation'] = 25
       self.w.opts['azimuth'] = 210
       self.w.setGeometry(30, 30, 1080, 720)
-      # self.w.showFullScreen()
+      self.w.showFullScreen()
       self.w.setBackgroundColor('w')
       self.w.show()
       self.phi = 0
@@ -34,7 +34,6 @@ class Visualizer():
       for cubie in Cubies.flatten():
         for face in cubie.faces.keys():
           cubie.faces[face].translate(-1.5,-1.5,-1.5)
-          # if not cubie.face_show[face]:
           self.w.addItem(cubie.faces[face])
 
     @staticmethod
@@ -77,9 +76,6 @@ class Visualizer():
 
     def animation(self):
       self.update()
-      # timer = QtCore.QTimer()
-      # timer.timeout.connect(self.update)
-      # timer.start()
       self.start()
 
 def on_press(key):
