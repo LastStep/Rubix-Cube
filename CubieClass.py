@@ -44,7 +44,7 @@ class Cubie:
 def check_faces(cube, Cubies):
   x, y, z = cube.index
   for i,j,k in zip([x - 1, x + 1],[y - 1, y + 1],[z - 1, z + 1]):
-    if 0 <= i <= 3:
+    if 0 <= i <= 2:
       try:
         Cubies[i][y][z]
         if i == x - 1:
@@ -53,7 +53,7 @@ def check_faces(cube, Cubies):
           cube.face_show['F'] = False
       except IndexError:
         pass
-    if 0 <= j <= 3:
+    if 0 <= j <= 2:
       try:
         Cubies[x][j][z]
         if j == y - 1:
@@ -62,7 +62,7 @@ def check_faces(cube, Cubies):
           cube.face_show['R'] = False
       except IndexError:
         pass
-    if 0 <= k <= 3:
+    if 0 <= k <= 2:
       try:
         Cubies[x][y][k]
         if k == z - 1:
