@@ -8,7 +8,21 @@ class Cubie:
   def __init__(self, index, data):
     self.index = index
     self.data = data
-    self.faces = {}
+    self.faces = {
+      'B':None,
+      'F':None,
+      'U':None,
+      'D':None,
+      'R':None,
+      'L':None
+    }    
+    self.alpha = 0.8
+    self.shader = 'balloon'
+    self.glOptions = 'translucent'
+    self.edgeColor = (0, 0, 0, 0.1)
+    self.drawEdges = True
+    self.plasticColor = (0, 0, 0, 1)
+    self.brightness = 0.9
     self.face_show = {
       'B':True,
       'F':True,
@@ -18,55 +32,45 @@ class Cubie:
       'L':True
     }
     self.colors = {
-      'B':(0.45, 0, 0, 0),
-      'F':(0.15, 0, 0, 0),
-      'U':(0.85, 0, 0, 0),
-      'D':(1, 0, 0, 0),
-      'R':(0.60, 0, 0, 0),
-      'L':(0.30, 0, 0, 0)
+      'B':(0, 0, self.brightness, self.alpha),
+      'F':(self.brightness, self.brightness, self.brightness, self.alpha),
+      'U':(self.brightness, self.brightness, 0, self.alpha),
+      'D':(0, self.brightness, 0, self.alpha),
+      'R':(self.brightness, 0.6, 0.4, self.alpha),
+      'L':(self.brightness, 0, 0, self.alpha)
     }
 
-    self.colors = {
-      'B':(0, 0.3, 0.7, 0),
-      'F':(0.9, 0.9, 0.9, 0),
-      'U':(1, 1, 0.3, 0),
-      'D':(0, 0.7, 0.3, 0),
-      'R':(1, 0.6, 0.4, 0),
-      'L':(0.7, 0, 0.3, 0)
-    }
 
 def check_faces(cube, Cubies):
   x, y, z = cube.index
-  try:
-    Cubies[x+1][y][z]
-    cube.face_show['F'] = False
-  except IndexError:
-    pass
-  # try:
-  #   Cubies[x-1][y][z]
-  #   cube.face_show['B'] = False
-  # except IndexError:
-  #   pass
-  try:
-    Cubies[x][y+1][z]
-    cube.face_show['R'] = False
-  except IndexError:
-    pass
-  # try:
-  #   Cubies[x][y-1][z]
-  #   cube.face_show['L'] = False
-  # except IndexError:
-  #   pass
-  try:
-    Cubies[x][y][z+1]
-    cube.face_show['U'] = False
-  except IndexError:
-    pass
-  # try:
-  #   Cubies[x][y][z-1]
-  #   cube.face_show['D'] = False
-  # except IndexError:
-  #   pass
+  for i,j,k in zip([x - 1, x + 1],[y - 1, y + 1],[z - 1, z + 1]):
+    if 0 <= i <= 3:
+      try:
+        Cubies[i][y][z]
+        if i == x - 1:
+          cube.face_show['B'] = False
+        else:
+          cube.face_show['F'] = False
+      except IndexError:
+        pass
+    if 0 <= j <= 3:
+      try:
+        Cubies[x][j][z]
+        if j == y - 1:
+          cube.face_show['L'] = False
+        else:
+          cube.face_show['R'] = False
+      except IndexError:
+        pass
+    if 0 <= k <= 3:
+      try:
+        Cubies[x][y][k]
+        if k == z - 1:
+          cube.face_show['D'] = False
+        else:
+          cube.face_show['U'] = False
+      except IndexError:
+        pass
 
 def cubie_data(index):
   i, j, k = index
@@ -82,6 +86,10 @@ def cubie_data(index):
   zy = np.array([[0, 1], [0, 1]])+k
   return xx, yx, xy, yy, zx, zy, xz, yz, zz1, zz2
 
+def get_faces(cube, face, x, y, z):
+  return gl.GLSurfacePlotItem(
+          x = x, y = y, z = z, color = cube.colors[face], edgeColor = cube.edgeColor, drawEdges = cube.drawEdges, shader = cube.shader, glOptions = cube.glOptions)
+
 def make_cube(Cubies):
   for i,j,k in product([0,1,2],[0,1,2],[0,1,2]):
     index = (i,j,k)
@@ -93,23 +101,16 @@ def make_cube(Cubies):
     xx, yx, xy, yy, zx, zy, xz, yz, zz1, zz2 = cube.data
 
     check_faces(cube, Cubies)
-
     for face, value in Cubies[i][j][k].face_show.items():
       if not value:
-        Cubies[i][j][k].colors[face] = (0, 0, 0, 0)
+        Cubies[i][j][k].colors[face] = cube.plasticColor
 
-    cube.faces['B'] = gl.GLSurfacePlotItem(
-        x = xx, y = yx, z = zx, color = cube.colors['B'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = 'balloon')
-    cube.faces['F'] = gl.GLSurfacePlotItem(
-        x = xx + 1, y = yx, z = zx, color = cube.colors['F'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = 'balloon')
+    cube.faces['B'] = get_faces(cube, 'B', xx    , yx    , zx )
+    cube.faces['F'] = get_faces(cube, 'F', xx + 1, yx    , zx )
+    cube.faces['L'] = get_faces(cube, 'L', xy    , yy    , zy )
+    cube.faces['R'] = get_faces(cube, 'R', xy    , yy + 1, zy )
+    cube.faces['U'] = get_faces(cube, 'U', xz    , yz    , zz1)
+    cube.faces['D'] = get_faces(cube, 'D', xz    , yz    , zz2)
 
-    cube.faces['L'] = gl.GLSurfacePlotItem(
-        x = xy, y = yy, z = zy, color = cube.colors['L'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = 'balloon')
-    cube.faces['R'] = gl.GLSurfacePlotItem(
-        x = xy, y = yy + 1, z = zy, color = cube.colors['R'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = 'balloon')
 
-    cube.faces['U'] = gl.GLSurfacePlotItem(
-        x = xz, y = yz, z = zz1, color = cube.colors['U'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = 'balloon')
-    cube.faces['D'] = gl.GLSurfacePlotItem(
-        x = xz, y = yz, z = zz2, color =cube.colors['D'], edgeColor = (0, 0, 0, 0), drawEdges = True, shader = 'balloon')
 
