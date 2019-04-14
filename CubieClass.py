@@ -16,12 +16,12 @@ class Cubie:
       'R':None,
       'L':None
     }    
-    self.alpha = 0.8
+    self.alpha = 0.75
     self.shader = 'balloon'
     self.glOptions = 'translucent'
     self.edgeColor = (0, 0, 0, 0.1)
     self.drawEdges = True
-    self.plasticColor = (0, 0, 0, 1)
+    self.plasticColor = (0, 0, 0, 0.3)
     self.brightness = 0.9
     self.face_show = {
       'B':True,

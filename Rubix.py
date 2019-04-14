@@ -11,32 +11,36 @@ pg.mkQApp()
 
 class Visualizer():
     def __init__(self):
-        self.traces = {}
-        self.w = gl.GLViewWidget()
-        self.w.opts['distance'] = 15
-        self.w.setGeometry(30, 30, 1080, 720)
-        self.w.showFullScreen()
-        self.w.show()
-        self.phi = 0
+      self.w = gl.GLViewWidget()
+      self.w.opts['distance'] = 15
+      self.w.opts['fov'] = 70
+      self.w.opts['elevation'] = 25
+      self.w.opts['azimuth'] = 210
+      self.w.setGeometry(30, 30, 1080, 720)
+      # self.w.showFullScreen()
+      self.w.setBackgroundColor('w')
+      self.w.show()
+      self.phi = 0
 
-        # gx = gl.GLGridItem()
-        # gy = gl.GLGridItem()
-        # gz = gl.GLGridItem()
-        # gy.rotate(90, 0, 1, 0)
-        # gz.rotate(90, 1, 0, 0)
-        # self.w.addItem(gx)
-        # self.w.addItem(gy)
-        # self.w.addItem(gz)
+      # gx = gl.GLGridItem()
+      # gy = gl.GLGridItem()
+      # gz = gl.GLGridItem()
+      # gy.rotate(90, 0, 1, 0)
+      # gz.rotate(90, 1, 0, 0)
+      # self.w.addItem(gx)
+      # self.w.addItem(gy)
+      # self.w.addItem(gz)
 
-        for cubie in Cubies.flatten():
-          for face in cubie.faces.keys():
-            cubie.faces[face].translate(-1.5,-1.5,-1.5)
-            self.w.addItem(cubie.faces[face])
+      for cubie in Cubies.flatten():
+        for face in cubie.faces.keys():
+          cubie.faces[face].translate(-1.5,-1.5,-1.5)
+          # if not cubie.face_show[face]:
+          self.w.addItem(cubie.faces[face])
 
     @staticmethod
     def start():
-        if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
-            QtGui.QApplication.instance().exec_()
+      if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
+          QtGui.QApplication.instance().exec_()
 
     def set_plotdata(self, cubie, xx, yx, xy, yy, zx, zy, xz, yz, zz1, zz2):
       cubie.faces['D'].setData(xz, yz, zz1)
@@ -72,9 +76,10 @@ class Visualizer():
       Cubies[layer, :, :] = np.rot90(Cubies[layer, :, :], 3 - check)
 
     def animation(self):
-      timer = QtCore.QTimer()
-      timer.timeout.connect(self.update)
-      timer.start(20)
+      self.update()
+      # timer = QtCore.QTimer()
+      # timer.timeout.connect(self.update)
+      # timer.start()
       self.start()
 
 def on_press(key):
@@ -93,13 +98,22 @@ def on_press(key):
     v.rotateU(check, 2) #Up Face
   keys.append(key)
   if key == Key.space:
-    randomize(30)
+    # randomize(30)
+    algo()
   if key == Key.enter:
-    v.w.opts['fov'] = 60
-    v.w.opts['elevation'] = 30
-    v.w.opts['azimuth'] = 45
+    v.w.opts['fov'] = 70
+    v.w.opts['elevation'] = 25
+    v.w.opts['azimuth'] = 210
+    v.update()
   if key == Key.esc:
     pg.exit()
+
+def algo():
+  for move in ['u','r','shift','u','shift','r']:
+    key = KeyCode(char = move) if move != 'shift' else Key.shift
+    on_press(key)
+  if not np.array_equal(Cubies, Original_Cube):
+    algo()
 
 def randomize(n = 20):
   from random import choice
@@ -112,10 +126,11 @@ def randomize(n = 20):
 
     # Start Qt event loop unless running in interactive mode.
 if __name__ == '__main__':
-  animation_speed = 200
+  animation_speed = 250
   keys = deque([''])
   Cubies = np.empty(shape = (3, 3, 3), dtype = object)
   Rubix.make_cube(Cubies)
+  Original_Cube = np.copy(Cubies)
   with Listener(on_press = on_press) as listener:
     v = Visualizer()
     v.animation()
