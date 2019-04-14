@@ -33,7 +33,8 @@ class Visualizer():
             cubie.faces[face].translate(-1.5,-1.5,-1.5)
             self.w.addItem(cubie.faces[face])
 
-    def start(self):
+    @staticmethod
+    def start():
         if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
             QtGui.QApplication.instance().exec_()
 
@@ -81,24 +82,18 @@ class Visualizer():
 
 def on_press(key):
   check = 0 if keys.pop() != Key.shift else 2
-  if key == KeyCode(char = '1'):
+  if key == KeyCode(char = 'b'):
     v.rotateF(check, [True, False, False]) #Back Face
-  elif key == KeyCode(char = '2'):
-    v.rotateF(check, [False, True, False]) #MiddleX Face
-  elif key == KeyCode(char = '3'):
+  elif key == KeyCode(char = 'f'):
     v.rotateF(check, [False, False, True]) #Front Face
-  elif key == KeyCode(char = '4'):
-    v.rotateR(check, [True, False, False]) #Left Face
-  elif key == KeyCode(char = '5'):
-    v.rotateR(check, [False, True, False]) #MiddleY Face
-  elif key == KeyCode(char = '6'):
-    v.rotateR(check, [False, False, True]) #Right Face
-  elif key == KeyCode(char = '7'):
-    v.rotateU(check, [True, False, False]) #Top Face
-  elif key == KeyCode(char = '8'):
-    v.rotateU(check, [False, True, False]) #MiddleZ Face
-  elif key == KeyCode(char = '9'):
-    v.rotateU(check, [False, False, True]) #Bottom Face
+  elif key == KeyCode(char = 'r'):
+    v.rotateR(check, [True, False, False]) #Right Face
+  elif key == KeyCode(char = 'l'):
+    v.rotateR(check, [False, False, True]) #Left Face
+  elif key == KeyCode(char = 'd'):
+    v.rotateU(check, [True, False, False]) #Down Face
+  elif key == KeyCode(char = 'u'):
+    v.rotateU(check, [False, False, True]) #Up Face
   keys.append(key)
   if key == Key.space:
     randomize(30)
